@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maktaba abdullah bin abdul muttalib</title>
+    <link rel="icon" href="myimg.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">
+            <img src="myimg.jpg" alt="Logo" class="logo-img">
+            <div class="logo-text">
+                <span class="logo-main">Maktaba</span>
+                <span class="logo-sub">Abdullah bin Abdul Muttalib</span>
+            </div>
+        </div>
+
+        <!-- Desktop nav links -->
+        <div class="nav-links" id="desktop-nav">
+            <a href="#" onclick="showSection('home')">Home</a>
+            <a href="#" onclick="showSection('shop')">Shop</a>
+            <a href="#" onclick="showSection('my-books')" id="my-books-link" style="display: none;">My Books</a>
+            <a href="#" id="auth-link" onclick="showSection('login')">Login</a>
+        </div>
+
+        <!-- Cart icon (always visible) -->
+        <div class="nav-right">
+            <div class="cart-icon" onclick="showSection('cart')">
+                <i class="fas fa-shopping-cart fa-lg"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+            </div>
+            <!-- Hamburger button (mobile only) -->
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile dropdown menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#" onclick="showSection('home'); closeMobileMenu()">Home</a>
+        <a href="#" onclick="showSection('shop'); closeMobileMenu()">Shop</a>
+        <a href="#" onclick="showSection('my-books'); closeMobileMenu()" id="my-books-link-mobile" style="display: none;">My Books</a>
+        <a href="#" id="auth-link-mobile" onclick="showSection('login'); closeMobileMenu()">Login</a>
+    </div>
+</header>
+
+<main>
+    <!-- Home Section -->
+    <section id="home" class="active">
+        <div class="hero">
+            <div class="hero-content">
+                <span class="hero-badge">WELCOME TO MAKTABA BOOKSTORE</span>
+                <h1 class="amiri">Illuminate Your<br><span class="highlight">Soul</span> with<br>Knowledge</h1>
+                <p>Explore our curated collection of authentic Islamic books and digital PDFs. From classical scholarship to modern insights.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showSection('shop')">Browse Shop <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-secondary" onclick="showSection('shop')">Digital Library</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="ui.png" alt="Islamic Library" onerror="this.src='https://via.placeholder.com/600x400?text=Library+Image'">
+            </div>
+        </div>
+        <div style="margin-top: 4rem;">
+            <h2 class="amiri" style="text-align: center; color: var(--primary-color);">Featured Books</h2>
+            <div id="featured-grid" class="product-grid">
+                <!-- Javascript will populate this -->
+                <div class="loader"></div>
+            </div>
+        </div>
+
+        <!-- Steps to Buy a Book Section -->
+        <div class="steps-section">
+            <div class="steps-header">
+                <span class="steps-badge">HOW IT WORKS</span>
+                <h2 class="amiri steps-title">Steps to Buy a Book</h2>
+                <p class="steps-subtitle">Follow these simple steps to get your favourite Islamic books delivered to your doorstep.</p>
+            </div>
+
+            <div class="steps-grid">
+
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon"><i class="fas fa-search"></i></div>
+                    <h3 class="step-title">Browse Books</h3>
+                    <p class="step-desc">Explore our curated collection of Islamic books and PDFs. Use the search bar or filter by category to find what you need.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <h3 class="step-title">Add to Cart</h3>
+                    <p class="step-desc">Click "Buy Now" on any book you like. You can add multiple books to your cart before proceeding.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon"><i class="fas fa-user-check"></i></div>
+                    <h3 class="step-title">Login & Checkout</h3>
+                    <p class="step-desc">Create a free account or log in, then fill in your name, phone number, and shipping address to place your order.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="step-title">Send Payment</h3>
+                    <p class="step-desc">Send your payment via JazzCash or EasyPaisa, then upload a screenshot of your payment proof to confirm your order.</p>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step-card">
+                    <div class="step-number">05</div>
+                    <div class="step-icon"><i class="fas fa-box-open"></i></div>
+                    <h3 class="step-title">Receive Your Book</h3>
+                    <p class="step-desc">Once your payment is verified, your order is dispatched. Physical books are delivered; PDFs are available instantly in My Books.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Shop Section -->
+    <section id="shop">
+        <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 2rem;">Shop</h2>
+        
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <input type="text" id="search-input" placeholder="Search books..." style="padding: 10px; flex-grow: 1; border-radius: 8px; border: 1px solid #ddd;">
+            <select id="category-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">All Categories</option>
+                <option value="Quran">Quran</option>
+                <option value="Hadith">Hadith</option>
+                <option value="Islamic History">Islamic History</option>
+                <option value="Kids">Kids</option>
+            </select>
+        </div>
+
+        <div id="shop-grid" class="product-grid">
+            <div class="loader"></div>
+        </div>
+    </section>
+
+    <!-- Product Detail Section -->
+    <section id="product-detail">
+        <!-- Javascript will populate this -->
+    </section>
+
+    <!-- Cart & Checkout Section -->
+    <section id="cart">
+        <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 2rem;">Your Cart</h2>
+        <div id="cart-items" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-sm);">
+            <!-- Cart items -->
+        </div>
+        <div style="margin-top: 2rem; text-align: right;">
+            <h3 id="cart-total">Total: $0.00</h3>
+            <button class="btn" style="margin-top: 1rem;" onclick="showCheckout()">Proceed to Checkout</button>
+        </div>
+    </section>
+
+    <!-- Checkout Form Section -->
+    <section id="checkout">
+        <div class="form-container">
+            <h2 class="amiri" style="text-align: center; color: var(--primary-color); margin-bottom: 1.5rem;">Checkout</h2>
+            <form id="checkout-form" onsubmit="handleCheckout(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="checkout-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="checkout-phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <textarea id="checkout-address" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Place Order</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Login / Signup Section -->
+    <section id="login">
+        <div class="form-container">
+            <h2 class="amiri" style="text-align: center; color: var(--primary-color); margin-bottom: 1.5rem;" id="auth-title">Login</h2>
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group" id="name-group" style="display: none;">
+                    <label>Full Name</label>
+                    <input type="text" id="auth-name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;" id="auth-submit">Login</button>
+                <p style="text-align: center; margin-top: 1rem; cursor: pointer; color: var(--primary-color);" onclick="toggleAuthMode()" id="auth-toggle">Don't have an account? Sign up</p>
+                <p id="auth-error" style="color: red; text-align: center; margin-top: 1rem;"></p>
+            </form>
+        </div>
+    </section>
+
+    <!-- Signup Success Popup -->
+    <div id="signup-success-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 3rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%;">
+            <i class="fas fa-check-circle" style="font-size: 4rem; color: #4CAF50; margin-bottom: 1rem;"></i>
+            <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 1rem;">Success!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">your account is sucessfully created</p>
+            <button class="btn" style="width: 100%;" onclick="closeSignupPopup()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Payment Section -->
+    <section id="payment">
+        <div class="form-container" style="max-width: 600px;">
+            <h2 class="amiri" style="text-align: center; color: var(--primary-color); margin-bottom: 1.5rem;">Payment Instructions</h2>
+            <div style="background: #f9f9f9; padding: 2rem; border-radius: 8px; text-align: center; margin-bottom: 2rem;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">Please send your payment to one of the following numbers:</p>
+                <div style="font-size: 1.5rem; color: #d32f2f; margin-bottom: 0.5rem;"><strong>JazzCash:</strong> 0300-1234567</div>
+                <div style="font-size: 1.5rem; color: #388e3c; margin-bottom: 1.5rem;"><strong>EasyPaisa:</strong> 0311-1234567</div>
+                <p style="margin-bottom: 1rem; color: var(--text-dark); font-weight: bold;">After sending payment, upload your screenshot below and click "Confirm Payment"</p>
+                <input type="hidden" id="current-order-id">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--text-dark);">
+                    📷 Upload Payment Screenshot <span style="color:red;">*</span> (Required)
+                </label>
+                <input type="file" id="payment-screenshot" accept="image/*" required
+                    style="width: 100%; border: 2px dashed var(--primary-color); padding: 12px; background: #f0faf5; border-radius: 8px; cursor: pointer;">
+                <div id="screenshot-preview" style="display:none; margin-top: 1rem; text-align:center;">
+                    <img id="screenshot-img-preview" src="" alt="Preview" style="max-width:100%; max-height:200px; border-radius:8px; border:2px solid var(--primary-color);">
+                </div>
+                <p id="screenshot-error" style="color:red; margin-top:0.5rem; display:none;">⚠️ Please upload your payment screenshot before confirming.</p>
+            </div>
+            
+            <button class="btn" style="width: 100%; padding: 14px;" onclick="submitPaymentProof()" id="confirm-payment-btn">
+                ✅ Confirm Payment
+            </button>
+        </div>
+    </section>
+
+    <!-- My Books Section -->
+    <section id="my-books">
+        <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 2rem;">My Books</h2>
+        <div id="my-books-grid" class="product-grid">
+            <div class="loader"></div>
+        </div>
+    </section>
+
+
+</main>
+
+<footer class="footer-dark">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3 class="amiri">Maktaba Abdullah</h3>
+            <p>Your premier destination for authentic Islamic knowledge. We provide carefully curated physical books and digital PDFs from classical scholarship to modern works, illuminating your spiritual journey.</p>
+        </div>
+        <div class="footer-section">
+            <h3 class="amiri">Quick Links</h3>
+            <ul>
+                <li><a href="#" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" onclick="showSection('shop')">Shop</a></li>
+                <li><a href="#" onclick="showSection('cart')">Cart</a></li>
+                <li><a href="admin.html">Admin Dashboard</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3 class="amiri">Contact Us</h3>
+            <ul class="contact-info">
+                <li><i class="fas fa-phone-alt"></i> +92 311 2323217</li>
+                <li><i class="fab fa-whatsapp"></i> +92 311 2323217</li>
+                <li><i class="fas fa-envelope"></i> contact@maktaba.com</li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3 class="amiri">Follow Us</h3>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/maktabahabdullahbam" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Maktaba Abdullah Bin Abdul Muttalib. All rights reserved.</p>
+    </div>
+</footer>
+
+<a href="https://wa.me/923112323217" class="wa-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<script src="js/supabase.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

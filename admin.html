@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maktaba Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #f0f2f5; }
+        .admin-sidebar { width: 250px; background: var(--white); height: 100vh; position: fixed; box-shadow: var(--shadow-md); padding: 2rem 0; }
+        .admin-sidebar a { display: block; padding: 1rem 2rem; color: var(--text-dark); font-weight: 500; text-decoration: none; border-left: 4px solid transparent; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: var(--light-green); color: var(--primary-color); border-left-color: var(--primary-color); }
+        .admin-content { margin-left: 250px; padding: 2rem; }
+        #admin-login { display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #admin-panel { display: none; }
+    </style>
+</head>
+<body>
+
+<section id="admin-login" class="active" style="display:flex; padding:0; min-height:100vh;">
+    <div class="form-container">
+        <h2 class="amiri" style="text-align: center; color: var(--primary-color); margin-bottom: 1.5rem;">Admin Login</h2>
+        <form id="admin-auth-form" onsubmit="handleAdminLogin(event)">
+            <div class="form-group">
+                <label>Admin Name</label>
+                <input type="text" id="admin-name" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="admin-password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Login</button>
+            <p id="admin-error" style="color: red; text-align: center; margin-top: 1rem;"></p>
+        </form>
+    </div>
+</section>
+
+<div id="admin-panel">
+    <div class="admin-sidebar">
+        <div class="logo" style="padding: 0 2rem; margin-bottom: 2rem;">Maktaba <span>Admin</span></div>
+        <a href="#" class="active" onclick="showAdminSection('dashboard', this)">Dashboard</a>
+        <a href="#" onclick="showAdminSection('products', this)">Products</a>
+        <a href="#" onclick="showAdminSection('orders', this)">Orders</a>
+        <a href="#" onclick="showAdminSection('users', this)">Users</a>
+        <a href="#" onclick="handleAdminLogout()" style="color: red; margin-top: auto;">Logout</a>
+    </div>
+
+    <div class="admin-content">
+        <!-- Dashboard -->
+        <div id="sec-dashboard" class="admin-sec active">
+            <h2 class="amiri" style="color: var(--primary-color);">Dashboard</h2>
+            <div style="display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                <div style="background: white; padding: 2rem; border-radius: 12px; flex: 1; min-width: 200px; box-shadow: var(--shadow-sm);">
+                    <h3>Total Products</h3>
+                    <p id="stat-products" style="font-size: 2rem; color: var(--primary-color); font-weight: bold;">0</p>
+                </div>
+                <div style="background: white; padding: 2rem; border-radius: 12px; flex: 1; min-width: 200px; box-shadow: var(--shadow-sm);">
+                    <h3>Total Orders</h3>
+                    <p id="stat-orders" style="font-size: 2rem; color: var(--primary-color); font-weight: bold;">0</p>
+                </div>
+                <div style="background: white; padding: 2rem; border-radius: 12px; flex: 1; min-width: 200px; box-shadow: var(--shadow-sm);">
+                    <h3>Total Users</h3>
+                    <p id="stat-users" style="font-size: 2rem; color: var(--primary-color); font-weight: bold;">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div id="sec-products" class="admin-sec" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="amiri" style="color: var(--primary-color);">Manage Products</h2>
+                <button class="btn" onclick="openProductModal()">+ Add Product</button>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-products-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Orders -->
+        <div id="sec-orders" class="admin-sec" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="amiri" style="color: var(--primary-color);">Manage Orders</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn" id="filter-pending" onclick="loadAdminOrders('pending')">Pending Orders</button>
+                    <button class="btn btn-outline" id="filter-paid" onclick="loadAdminOrders('paid')">Approved Orders</button>
+                </div>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Book Title(s)</th>
+                        <th>Screenshot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-orders-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Users -->
+        <div id="sec-users" class="admin-sec" style="display: none;">
+            <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 2rem;">Manage Users</h2>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Signed Up</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-users-list"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Product Modal -->
+<div id="product-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+        <h3 id="modal-title" style="margin-bottom: 1rem;">Add Product</h3>
+        <form id="product-form" onsubmit="saveProduct(event)">
+            <input type="hidden" id="prod-id">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="prod-title" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="prod-desc" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" id="prod-price" step="0.01" value="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <!-- Predefined categories as requested -->
+                <select id="prod-category" required>
+                    <option value="Quran">Quran</option>
+                    <option value="Hadith">Hadith</option>
+                    <option value="Islamic History">Islamic History</option>
+                    <option value="Kids">Kids</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select id="prod-type" required onchange="togglePdfUpload()">
+                    <option value="physical">Physical Book</option>
+                    <option value="pdf">PDF Download</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Product Image</label>
+                <input type="file" id="prod-image" accept="image/*">
+            </div>
+            <div class="form-group" id="pdf-upload-group" style="display: none;">
+                <label>PDF File</label>
+                <input type="file" id="prod-pdf" accept="application/pdf">
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn" style="flex: 1;" id="save-prod-btn">Save</button>
+                <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeProductModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Product Success Popup -->
+<div id="product-success-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 3rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%;">
+        <i class="fas fa-check-circle" style="font-size: 4rem; color: #4CAF50; margin-bottom: 1rem;"></i>
+        <h2 class="amiri" style="color: var(--primary-color); margin-bottom: 1rem;">Success!</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">product has been sucessfuly added</p>
+        <button class="btn" style="width: 100%;" onclick="closeProductSuccessPopup()">Continue</button>
+    </div>
+</div>
+
+<script src="js/supabase.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
